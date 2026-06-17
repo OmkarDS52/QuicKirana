@@ -19,7 +19,7 @@ public class OrderController {
     private final OrderService orderService;
 
     // Customer creates order
-    @PostMapping("/")
+    @PostMapping
     public ResponseEntity<OrderResponse> createOrder(
             Authentication auth,
             @RequestBody CreateOrderRequest request) {
@@ -27,20 +27,26 @@ public class OrderController {
         return ResponseEntity.ok(orderService.createOrder(customerId, request));
     }
 
-    // Customer views their own orders
+    // Customer views their orders
     @GetMapping("/my")
     public ResponseEntity<List<OrderResponse>> getMyOrders(Authentication auth) {
         String customerId = auth.getPrincipal().toString();
         return ResponseEntity.ok(orderService.getCustomerOrders(customerId));
     }
 
-    // Shop owner views all orders for their shop
+    // Get single order detail
+    @GetMapping("/{orderId}")
+    public ResponseEntity<OrderResponse> getOrderById(@PathVariable String orderId) {
+        return ResponseEntity.ok(orderService.getOrderById(orderId));
+    }
+
+    // Shop owner views all orders
     @GetMapping("/shop/{shopId}")
     public ResponseEntity<List<OrderResponse>> getShopOrders(@PathVariable String shopId) {
         return ResponseEntity.ok(orderService.getShopOrders(shopId));
     }
 
-    // Shop owner filters orders by status
+    // Shop owner filters by status
     @GetMapping("/shop/{shopId}/status/{status}")
     public ResponseEntity<List<OrderResponse>> getShopOrdersByStatus(
             @PathVariable String shopId,
@@ -48,7 +54,7 @@ public class OrderController {
         return ResponseEntity.ok(orderService.getShopOrdersByStatus(shopId, status));
     }
 
-    // Shop owner updates order status
+    // Shop owner updates status
     @PutMapping("/{orderId}/status")
     public ResponseEntity<OrderResponse> updateStatus(
             @PathVariable String orderId,
